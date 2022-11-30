@@ -14,6 +14,7 @@ public class apartmentcomplex {
 	/*메인 메소드*/
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
 		/*타이틀 출력*/
 		System.out.println("아파트 단지 인사 관리 프로그램");
 		System.out.println("2022-2 데이터베이스 Term Project. 제작자 : 충북대학교 2020039096 백인혁");
@@ -28,7 +29,7 @@ public class apartmentcomplex {
 			
 			while(command1>0) {
 				System.out.println("<수행하려는 업무를 선택하세요>");
-				System.out.println("종료 : 0  직원 : 1  사무실 : 2  아파트 : 3  시설 : 4");
+				System.out.println("| 종료 : 0 | 직원 : 1 | 부서 : 2 | 아파트 : 3 | 시설 : 4 |");
 				System.out.print("입력 : ");
 				command1=scanner.nextInt();
 				
@@ -43,7 +44,7 @@ public class apartmentcomplex {
 				//직원
 				else if(command1==1) {
 					System.out.println("<명령을 선택하세요>");
-					System.out.println("직원 목록 : 0  직원 검색 : 1  직원 추가 : 2  직원 삭제 : 3");
+					System.out.println("| 직원 목록 : 0 | 직원 검색 : 1 | 직원 추가 : 2 | 직원 삭제 : 3 |");
 					System.out.print("입력 : ");
 					command2=scanner.nextInt();
 					if(command2==0) {
@@ -106,10 +107,10 @@ public class apartmentcomplex {
 						
 					}
 				}
-				//사무실
+				//부서
 				else if(command1==2){
 					System.out.println("<실행할 명령을 선택하세요>");
-					System.out.println("사무실 목록 : 0  사무실 별 직원 목록 : 1  직원 배정 : 2  직원 삭제 : 3  업무 배정 : 4  업무 중단 : 5");
+					System.out.println("| 부서 목록 : 0 | 부서별 직원 목록 : 1 | 직원 배정 : 2 | 직원 삭제 : 3 | 업무 배정 : 4 | 업무 배제 : 5 |");
 					System.out.print("입력 : ");
 					command2=scanner.nextInt();
 					
@@ -117,21 +118,23 @@ public class apartmentcomplex {
 					
 					if(command2==0) {
 						//사무실 목록 출력
-						System.out.println("사무실 목록(ocode, oname)");
-						ResultSet rs=stmt.executeQuery("SELECT ocode, oname FROM Office");
+						System.out.println("부서 목록(부서 번호, 부서명, 소속 직원 수)");
+						ResultSet rs=stmt.executeQuery("SELECT * FROM Office");
 						while(rs.next())
-							System.out.println(rs.getInt(1)+" "+rs.getString(2));
+							System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getInt(3));
 						
 						System.out.println();
 						
 					}
 					else if(command2==1) {
 						//해당 사무실 소속된 직원들의 아이디와 이름 출력
-						System.out.print("사무실 번호 : ");
+						System.out.print("부서 번호 : ");
 						int ocode=scanner.nextInt();
 						
 						String sql1="SELECT mid, mname From Manager WHERE mid IN (SELECT mid from WorkIn WHERE ocode = ";
 						String sql2=")";
+						
+						System.out.println("직원 목록(직원번호, 직원명)");
 						
 						pstmt=con.prepareStatement(sql1+ocode+sql2);
 						
@@ -143,8 +146,8 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==2) {
-						//해당 사무실에서 직원 추가
-						System.out.print("사무실 번호 : ");
+						//해당 부서에 직원 추가
+						System.out.print("부서 번호 : ");
 						int ocode=scanner.nextInt();
 						System.out.print("직원 번호 : ");
 						int mid=scanner.nextInt();
@@ -178,7 +181,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==3) {
-						//해당 사무실의 해당 직원 삭제
+						//직원 소속 부서에서 삭제
 						System.out.print("직원 번호 : ");
 						int mid=scanner.nextInt();
 						int ocode=-1;
@@ -277,13 +280,13 @@ public class apartmentcomplex {
 				//아파트
 				else if(command1==3) {
 					System.out.println("<실행할 명령을 선택하세요>");
-					System.out.println("아파트 목록 : 0  아파트 근무 직원 목록 : 1  대표자 조회 : 2  대표자 추가 : 3  대표자 삭제 : 4");
+					System.out.println("| 아파트 목록 : 0 | 아파트 근무 직원 목록 : 1 | 대표자 조회 : 2 | 대표자 추가 : 3 | 대표자 삭제 : 4 |");
 					System.out.print("입력 : ");
 					command2=scanner.nextInt();
 					
 					if(command2==0) {
 						//아파트 목록 출력
-						System.out.println("아파트 목록");
+						System.out.println("아파트 목록(건물 번호, 아파트명, 층수, 평수, 세대수)");
 						ResultSet rs=stmt.executeQuery("SELECT * FROM Apartment");
 						while(rs.next())
 							System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getInt(3)+" "+rs.getInt(4)+" "+rs.getInt(5));
@@ -376,7 +379,7 @@ public class apartmentcomplex {
 			
 				else if(command1==4) {
 					System.out.println("<실행할 명령을 선택하세요>");
-					System.out.println("시설 목록 : 0  시설 검색 : 1  시설 추가 : 2  시설 삭제 : 3");
+					System.out.println("| 시설 목록 : 0 | 시설별 근무자 조회 : 1 | 시설 추가 : 2 | 시설 삭제 : 3 |");
 					System.out.print("입력 : ");
 					command2=scanner.nextInt();
 					
@@ -384,7 +387,7 @@ public class apartmentcomplex {
 					
 					if(command2==0) {
 						//시설 목록 출력
-						System.out.println("시설 목록");
+						System.out.println("시설 목록(시설 번호, 시설명, 층수, 면적, 시설 종류");
 						ResultSet rs=stmt.executeQuery("SELECT * FROM Facility");
 						while(rs.next())
 							System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getInt(3)+" "+rs.getInt(4)+" "+rs.getString(5));
