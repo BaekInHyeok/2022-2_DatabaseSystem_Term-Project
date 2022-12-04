@@ -28,6 +28,7 @@ public class apartmentcomplex {
 			int ret;
 			
 			while(command1>0) {
+				//수행 업무 선택
 				System.out.println("<수행하려는 업무를 선택하세요>");
 				System.out.println("| 종료 : 0 | 직원 : 1 | 부서 : 2 | 아파트 : 3 | 시설 : 4 |");
 				System.out.print("입력 : ");
@@ -41,8 +42,9 @@ public class apartmentcomplex {
 					break;
 				}
 					
-				//직원
+				/*직원*/
 				else if(command1==1) {
+					//명령 선택
 					System.out.println("<명령을 선택하세요>");
 					System.out.println("| 직원 목록 : 0 | 직원 검색 : 1 | 직원 추가 : 2 | 직원 삭제 : 3 |");
 					System.out.print("입력 : ");
@@ -57,7 +59,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==1) {
-						//직원 아이디로 직원 정보 출력
+						//직원 아이디 입력 -> 직원 정보 출력
 						System.out.print("직원 ID : ");
 						int id =scanner.nextInt();
 						
@@ -107,8 +109,9 @@ public class apartmentcomplex {
 						
 					}
 				}
-				//부서
+				/*부서*/
 				else if(command1==2){
+					//명령 선택
 					System.out.println("<실행할 명령을 선택하세요>");
 					System.out.println("| 부서 목록 : 0 | 부서별 직원 목록 : 1 | 직원 배정 : 2 | 직원 삭제 : 3 | 업무 배정 : 4 | 업무 배제 : 5 |");
 					System.out.print("입력 : ");
@@ -117,7 +120,7 @@ public class apartmentcomplex {
 					System.out.println();
 					
 					if(command2==0) {
-						//사무실 목록 출력
+						//부서 목록 출력
 						System.out.println("부서 목록(부서 번호, 부서명, 소속 직원 수)");
 						ResultSet rs=stmt.executeQuery("SELECT * FROM Office");
 						while(rs.next())
@@ -127,7 +130,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==1) {
-						//해당 사무실 소속된 직원들의 아이디와 이름 출력
+						//부서 번호 입력 -> 직원들의 아이디와 이름 출력
 						System.out.print("부서 번호 : ");
 						int ocode=scanner.nextInt();
 						
@@ -146,7 +149,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==2) {
-						//해당 부서에 직원 추가
+						//부서 번호, 직원 -> 해당 부서에 해당 직원을 배정
 						System.out.print("부서 번호 : ");
 						int ocode=scanner.nextInt();
 						System.out.print("직원 번호 : ");
@@ -160,7 +163,7 @@ public class apartmentcomplex {
 						
 						ret=pstmt.executeUpdate();
 						
-						
+						//배정 후 해당 부서의 소속 인원 수 1 증가
 						String sql="SELECT mcount FROM Office WHERE ocode = ";
 						
 						pstmt=con.prepareStatement(sql+ocode);
@@ -181,7 +184,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==3) {
-						//직원 소속 부서에서 삭제
+						//직원 아이디 입력 -> 직원을 소속 부서에서 삭제
 						System.out.print("직원 번호 : ");
 						int mid=scanner.nextInt();
 						int ocode=-1;
@@ -200,6 +203,7 @@ public class apartmentcomplex {
 						
 						ret=pstmt.executeUpdate();
 						
+						//삭제 후 해당 부서의 소속 인원 1 감소
 						sql="SELECT mcount FROM Office WHERE ocode = ";
 						pstmt=con.prepareStatement(sql+ocode);
 						
@@ -221,12 +225,13 @@ public class apartmentcomplex {
 					}
 					
 					else if(command2==4) {
-						//직원 아이디와 건물번호를 입력받아 배정
+						//직원 아이디, 건물번호 -> 해당 건물에 직원 배정
 						System.out.print("직원 아이디 입력 : ");
 						int mid=scanner.nextInt();
 						System.out.print("건물 번호 입력 : ");
 						int bcode=scanner.nextInt();
 						
+						//건물번호가 101~106이면 해당 번호의 아파트에 배정
 						if(bcode <=106) {
 							pstmt=con.prepareStatement("INSERT INTO ManageApartment(mid,acode) VALUES(?,?)");
 							pstmt.setInt(1, mid);
@@ -234,6 +239,8 @@ public class apartmentcomplex {
 							
 							ret=pstmt.executeUpdate();
 						}
+						
+						//건물번호가 106보다 크면 해당 번호의 부대시설에 배정
 						else if(bcode > 106) {
 							pstmt=con.prepareStatement("INSERT INTO ManageFacility(mid,fcode) VALUES(?,?)");
 							pstmt.setInt(1, mid);
@@ -246,12 +253,13 @@ public class apartmentcomplex {
 				
 					}
 					else if(command2==5) {
-						//직원 아이디를 입력받아 건물 배정에서 제외
+						//직원 아이디, 건물 번호 입력 -> 해당 건물 배정에서 제외
 						System.out.print("직원 아이디 입력 : ");
 						int mid=scanner.nextInt();
 						System.out.print("건물 번호 입력 : ");
 						int bcode=scanner.nextInt();
 						
+						//건물번호가 106보다 작으면 아파트 목록에서 해당 건물 찾아 직원 삭제
 						if(bcode <=106) {
 							String sql="DELETE FROM ManageApartment WHERE mid = ";
 							
@@ -260,6 +268,7 @@ public class apartmentcomplex {
 							ret=pstmt.executeUpdate();
 							
 						}
+						//건물 번호가 106보다 크면 부대시설 목록에서 해당 건물 찾아 직원 삭제
 						else if(bcode > 106) {
 							String sql="DELETE FROM ManageFacility WHERE mid = ";
 							
@@ -277,8 +286,9 @@ public class apartmentcomplex {
 					}
 					
 				}
-				//아파트
+				/*아파트*/
 				else if(command1==3) {
+					//실행 명령 입력
 					System.out.println("<실행할 명령을 선택하세요>");
 					System.out.println("| 아파트 목록 : 0 | 아파트 근무 직원 목록 : 1 | 대표자 조회 : 2 | 대표자 추가 : 3 | 대표자 삭제 : 4 |");
 					System.out.print("입력 : ");
@@ -295,7 +305,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==1) {
-						//아파트 코드로 해당 아파트에서 일하는 직원들을 출력한다.
+						//아파트 코드 입력 -> 해당 아파트에서 일하는 직원 목록 출력
 						System.out.print("아파트 번호 입력 : ");
 						int acode=scanner.nextInt();
 						
@@ -311,7 +321,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==2) {
-						//아파트 코드로 대표자를 조회한다
+						//아파트 코드 입력 -> 해당 아파트의 입주자 대표 정보 조회
 						System.out.print("아파트 번호 입력 : ");
 						int acode=scanner.nextInt();
 						
@@ -328,7 +338,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==3) {
-						//아파트에 대표자를 추가한다
+						//아파트 번호, 대표자 성명, 대표자 나이, 대표자 직업 입력 -> 해당 아파트에 입주자 대표 추가
 						System.out.print("아파트 번호 : ");
 						int acode=scanner.nextInt();
 						System.out.print("대표자 성명 : ");
@@ -354,7 +364,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==4) {
-						//아파트에서 대표자를 삭제한다
+						//입주자 대표자명 입력 -> 해당 대표자 삭제
 						System.out.println("@주의! : '이름' 형식으로 입력해야 합니다.");
 						System.out.print("대표자명 : ");
 						String pname=scanner.next();
@@ -376,8 +386,9 @@ public class apartmentcomplex {
 						
 					}
 				}
-			
+				/*부대시설*/
 				else if(command1==4) {
+					//명령 입력
 					System.out.println("<실행할 명령을 선택하세요>");
 					System.out.println("| 시설 목록 : 0 | 시설별 근무자 조회 : 1 | 시설 추가 : 2 | 시설 삭제 : 3 |");
 					System.out.print("입력 : ");
@@ -395,7 +406,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==1) {
-						//시설을 검색하여 해당 시설에서 근무하는 직원들의 정보 출력
+						//시설번호 입력 -> 해당 시설에서 근무하는 직원들의 정보 출력
 						System.out.print("시설 번호 입력 : ");
 						int fcode=scanner.nextInt();
 						
@@ -411,7 +422,7 @@ public class apartmentcomplex {
 						System.out.println();
 					}
 					else if(command2==2) {
-						//시설 추가
+						//시설번호, 시설명, 층수, 면적, 시설 종류 입력 -> 데이터베이스에 시설 추가
 						System.out.print("시설번호 : ");
 						int fcode=scanner.nextInt();
 						System.out.print("시설명 : ");
@@ -436,7 +447,7 @@ public class apartmentcomplex {
 						
 					}
 					else if(command2==3) {
-						//시설 삭제
+						//시설 번호 입력 -> 해당 시설 삭제
 						System.out.print("시설번호 : ");
 						int fcode=scanner.nextInt();
 						
